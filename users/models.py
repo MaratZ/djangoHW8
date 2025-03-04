@@ -1,10 +1,8 @@
-from datetime import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from lms.models import Course, Lesson
-
+from datetime import datetime
 
 class User(AbstractUser):
     username = None
