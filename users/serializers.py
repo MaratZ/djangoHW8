@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-
-from users.models import Payment
+from .models import Payment
 
 
 class PaymentSerializer(ModelSerializer):
