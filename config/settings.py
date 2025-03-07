@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "lms",
     "users",
-    "django_filters"
+    "django_filters",
+    "rest_framework_simplejwt"
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,15 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 REST_FRAMEWORK = {
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"]
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 DATABASES = {
