@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
@@ -5,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from rest_framework.response import Response
+
+from lms.paginations import CustomPagination
 
 from lms.models import Course, Lesson, Subscription
 from lms.serializers import (CourseSerializer, LessonSerializer,
@@ -15,6 +18,7 @@ from users.permissions import IsModer, IsOwner
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         if self.action == "create":
@@ -36,7 +40,7 @@ class LessonListApiView(ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, IsModer | IsOwner]
-
+    pagination_class = CustomPagination
 
 class LessonRetrieveApiView(RetrieveAPIView):
     queryset = Lesson.objects.all()
