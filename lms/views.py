@@ -2,45 +2,41 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import (
-     CreateAPIView,
-     DestroyAPIView,
-     ListAPIView,
-     RetrieveAPIView,
-     UpdateAPIView,
- )
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from rest_framework.response import Response
-
-from lms.paginations import CustomPagination
-
 from lms.models import Course, Lesson, Subscription
+from lms.paginations import CustomPagination
 from lms.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
 
+
 @method_decorator(
-     name="list",
-     decorator=swagger_auto_schema(operation_description="Список курсов"),
- )
- @method_decorator(
-     name="create", decorator=swagger_auto_schema(operation_description="Создание курса")
- )
- @method_decorator(
-     name="retrieve",
-     decorator=swagger_auto_schema(operation_description="Просмотр курса"),
- )
- @method_decorator(
-     name="destroy",
-     decorator=swagger_auto_schema(operation_description="Удаление курса"),
- )
- @method_decorator(
-     name="update",
-     decorator=swagger_auto_schema(operation_description="Обновление курса"),
- )
-
-
-
+    name="list",
+    decorator=swagger_auto_schema(operation_description="Список курсов"),
+)
+@method_decorator(
+    name="create", decorator=swagger_auto_schema(operation_description="Создание курса")
+)
+@method_decorator(
+    name="retrieve",
+    decorator=swagger_auto_schema(operation_description="Просмотр курса"),
+)
+@method_decorator(
+    name="destroy",
+    decorator=swagger_auto_schema(operation_description="Удаление курса"),
+)
+@method_decorator(
+    name="update",
+    decorator=swagger_auto_schema(operation_description="Обновление курса"),
+)
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
@@ -68,6 +64,7 @@ class LessonListApiView(ListAPIView):
     permission_classes = [IsAuthenticated, IsModer | IsOwner]
     pagination_class = CustomPagination
 
+
 class LessonRetrieveApiView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
@@ -84,6 +81,7 @@ class LessonDestroyApiView(DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModer | IsOwner]
+
 
 class SubscriptionCreateAPIView(CreateAPIView):
 
@@ -111,5 +109,5 @@ class SubscriptionCreateAPIView(CreateAPIView):
 
 
 class SubscriptionListAPIView(ListAPIView):
-        queryset = Subscription.objects.all()
-        serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
