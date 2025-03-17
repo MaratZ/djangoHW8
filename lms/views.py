@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
+from lms.tasks import send_notification
 from rest_framework.generics import (
     CreateAPIView,
     DestroyAPIView,
@@ -42,20 +43,41 @@ class CourseViewSet(ModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = CustomPagination
 
-    def get_permissions(self):
-        if self.action == "create":
-            self.permission_classes = (~IsModer,)
-        elif self.action in ["list", "update", "retrieve"]:
-            self.permission_classes = (IsModer | IsOwner,)
-        elif self.action == "destroy":
-            self.permission_classes = (~IsModer | IsOwner,)
-        return super().get_permissions()
+    def get_serializer_class(self):
+        """Выбор сериализатора"""
+        if self.action == "retrieve":  # если действие является детальным просмотром то:
+            return CourseDetailSerializer
+        return CourseSerializer
+
+    def perform_create(self, serializer):
+        course = serializer.save()
+        course.user = self.request.user
+        course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        # отправить сообщение об обновлении курса подписанному пользователю:
+        for subscription in Subscription.objects.filter(course=course.pk):
+            email = subscription.user.email
+            message = f'Данные по курсу "{subscription.course.title}" были обновлены'
+            send_notification.delay(email, message)
+        course.save()
 
 
 class LessonCreateApiView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModer]
+
+    def perform_create(self, serializer):
+        lesson = serializer.save()
+        lesson.user = self.request.user
+        # отправить сообщение о создании урока подписанному пользователю:
+        for subscription in Subscription.objects.filter(course=lesson.courses.pk):
+            email = subscription.user.email
+            message = f'В курсе "{subscription.course.title}" появился новый урок'
+            send_notification.delay(email, message)
+        lesson.save()
 
 
 class LessonListApiView(ListAPIView):
@@ -75,6 +97,18 @@ class LessonUpdateApiView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, IsModer | IsOwner]
+
+    def perform_update(self, serializer):
+        lesson = serializer.save()
+        lesson.user = self.request.user
+        # отправить сообщение об обновлении урока подписанному пользователю:
+        for subscription in Subscription.objects.filter(course=lesson.courses.pk):
+            email = subscription.user.email
+            message = (
+                f'В курсе "{subscription.course.title}" обновился урок "{lesson.title}"'
+            )
+            send_notification.delay(email, message)
+        lesson.save()
 
 
 class LessonDestroyApiView(DestroyAPIView):
