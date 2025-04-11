@@ -1,0 +1,95 @@
+# MaratZ
+
+# Платформа для онлайн-обучения
+
+## Описание
+
+Проект курса
+В домашних заданиях курса вы реализуете платформу для онлайн-обучения,
+на которой каждый желающий сможет размещать свои полезные материалы
+или курсы.
+
+Вы будете работать над SPA-приложением.
+Результатом создания проекта будет бэкенд-сервер,
+который возвращает клиенту JSON-структуры.
+
+## Установка:
+
+1. Клонируйте репозиторий:
+
+```
+git clone https://github.com/MaratZ/djangoHW8
+```
+## Конфигурация
+1. Создайте виртуальное окружение poetry.
+
+```
+poetry env
+```
+
+2. Установите библиотеки Flake8, black, isort, mypy в группу lint.
+
+```commandline
+poetry add --group lint flake8
+poetry add --group lint black
+poetry add --group lint isort
+poetry add --group lint mypy
+```
+
+3. Создайте файл .flake8 для настройки библиотеки flak8
+
+
+4. Настройте установленные библиотеки, используя кода ниже
+
+Файл .flake8
+
+```
+[flake8]
+max-line-length = 119
+```
+
+5. Установите требуемые библиотеки:
+````commandline
+poetry add requests
+poetry add python-dotenv
+poetry add psycopg2
+poetry add django
+poetry add redis
+poetry add ipython
+pip install djangorestframework
+pip install django-filter
+pip install djangorestframework-simplejwt
+pip install drf-yasg
+pip install stripe
+pip install celery
+pip install eventlet -- только для Windows
+pip install django-celery-beat
+pip install redis
+````
+
+6. Инициализируйте django-проект внутри текущей директории
+````
+django-admin startproject config .
+````
+
+
+## LMS-система:
+
+1. Создайте приложения lms и users
+````
+python manage.py startapp lms
+python manage.py startapp users
+````
+2. Зарегистрируйте приложения в settings.py
+3. Для приложения lms создайте модели: Course, Lesson, Subscription
+4. Для приложения users создайте модели: User, Payment
+5. Опишите CRUD для всех моделей на основе ViewSet и Generic-классов
+6. Создайте сериализаторы
+7. Настройте права доступа
+8. Опишите требуемые валидаторы
+9. Добавьте пагинацию
+10. Протестируйте полученный код
+11. Поключите и настройте вывод документации для проекта
+12. Настройте celery. Запуск селери и воркер : celery -A config worker --beat --scheduler django --loglevel=info
+13. Запуск селери и воркер : celery -A config worker --beat --scheduler django --loglevel=info
+14. Как запускать с докер из консоли: Ввести команду для сборки образов и запуска контейнеров: docker-compose up -d —build
