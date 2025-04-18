@@ -1,5 +1,7 @@
 import os
+
 import sys
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -15,7 +17,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
